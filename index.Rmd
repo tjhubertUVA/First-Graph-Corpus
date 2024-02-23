@@ -12,7 +12,25 @@ Welcome to my Portfolio!
 
 ### Visuals
 
-Dit komt nog, chill ff.
+```{r}
+library(tidyverse)
+library(spotifyr)
+
+ClassicalMusic <- get_playlist_audio_features("", "27Zm1P410dPfedsdoO9fqm")
+FilmMusic <- get_playlist_audio_features("", "3FUHkTsK7xNOqrHOXVHRF4")
+
+awards <-
+  bind_rows(
+    ClassicalMusic |> mutate(category = "Classical Music"),
+    FilmMusic |> mutate(category = "Film Music")
+  )
+
+awards |>
+  ggplot(aes(x = energy)) +
+  geom_histogram(binwidth = 0.1) +
+  facet_wrap(~category)
+
+```
 
 ***
 This is a sidebar.
