@@ -12,9 +12,14 @@ Welcome to my Portfolio!
 
 ### Visuals
 
+#### Similar Energy Levels Between Classical & Film Music
+
+In the graph below you can see an analysis of the energy levels when comparing two playlists of classical music and of film music. You can see that there indeed appears to be a very similar distribution of energy levels across both genres, you may also be able to see that they similarly have a lot of tracks considered "low" in energy and relatively little considered "high" in energy.
+
 ```{r}
 library(tidyverse)
 library(spotifyr)
+library(compmus)
 
 ClassicalMusic <- get_playlist_audio_features("", "27Zm1P410dPfedsdoO9fqm")
 FilmMusic <- get_playlist_audio_features("", "3FUHkTsK7xNOqrHOXVHRF4")
