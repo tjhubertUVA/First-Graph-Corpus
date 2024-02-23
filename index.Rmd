@@ -37,6 +37,63 @@ awards |>
 
 ```
 
+#### Comparing Hans Zimmer - Time & Wolfgang Amadeus Mozart - Eine kleine Nachtmusik K.525
+
+In the following two graphs I compare the very famous movie theme 'Time' by Hans Zimmer from the movie Inception, against the classical music piece Eine Kleine Nachtmusik (K.525) by Wolfgang Amadeus Mozart. Both of these pieces are in the key of G-major, but you can clearly see a difference in their song structure. Both pieces are around ~5 minutes in length, but whereas Zimmer tends to hold the listener in a state of harmonic suspense (Many of the notes are repeated over and over), Mozart displays are more classical from of song structure by clearly switching between chords (note the clear distinction of notes in the graph)
+
+```{r}
+library(tidyverse)
+library(spotifyr)
+library(compmus)
+
+#Drawing A Graph For Hans Zimmer
+zimmer <-
+  get_tidy_audio_analysis("6ZFbXIJkuI1dVNWvzJzown") |>
+  select(segments) |>
+  unnest(segments) |>
+  select(start, duration, pitches)
+
+zimmer |>
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
+  compmus_gather_chroma() |> 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c()
+
+#Drawing A Graph For Mozart
+mozart <-
+  get_tidy_audio_analysis("4KLVPRo0f6XUJa4t4dnRW6") |>
+  select(segments) |>
+  unnest(segments) |>
+  select(start, duration, pitches)
+
+mozart |>
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
+  compmus_gather_chroma() |> 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c()
+
+```
+
 ***
 This is a sidebar.
 
