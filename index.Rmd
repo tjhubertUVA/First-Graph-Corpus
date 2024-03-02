@@ -10,12 +10,13 @@ date: "2024-02-21"
 
 Welcome to my Portfolio! This is where I will display my findings during the course 'Computational Musicology' at the UvA.Feel free to look around and ask me any questions :)
 
+In this Corpus I am comparing FIlm Music and Classical Music, and seeing how they interact and how they differ.
+
+
 -Info-
 Thomas Hubert
 SNUM: 14642271
 Email: thomas.hubert@student.uva.nl
-
-Bon dia bon dia bon dia check check mic check
 
 ### Visuals
 
