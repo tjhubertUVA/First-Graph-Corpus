@@ -49,9 +49,6 @@ awards |>
 
 In the following two graphs I compare the very famous movie theme 'Time' by Hans Zimmer from the movie Inception, against the classical music piece Eine Kleine Nachtmusik (K.525) by Wolfgang Amadeus Mozart. Both of these pieces are in the key of G-major, but you can clearly see a difference in their song structure. Both pieces are around ~5 minutes in length, but whereas Zimmer tends to hold the listener in a state of harmonic suspense (Many of the notes are repeated over and over), Mozart displays are more classical from of song structure by clearly switching between chords (note the clear distinction of notes in the graph)
 
-*DISCLAIMER*
-I'm not sure why it's printing the second graph smaller?
-
 ```{r}
 library(tidyverse)
 library(spotifyr)
@@ -199,7 +196,7 @@ bztM |>
 
 #### Chords analysis
 
-Now we will compare the chords used in these two songs.
+Now we will compare the chords used in these two songs.By doing this we can again correlate our findings from the previous two graphs. It appears that while Hans Zimmer's Time and Mozart's Nachtmusik share the same tonic chord (G-Major), and they both certainly make extensive use of thi chord, Zimmer doesn't follow common song structure nearly as much as Mozart does. This could be explained by the strong sense of "norm" back in Mozart's time, but it could also be an effect of more Chordal Thinking in Mozart's time.
 
 ```{r}
 
@@ -318,7 +315,7 @@ AmadeusMozMoz <-
 ```
 
 
-Hans Zimmer - Time
+##### Hans Zimmer - Time
 ```{r}
 HansZimZim |> 
   compmus_match_pitch_template(
@@ -336,7 +333,7 @@ HansZimZim |>
 ```
 
 
-Mozart - Nachtmusik
+##### Mozart - Nachtmusik
 ```{r}
 AmadeusMozMoz |> 
   compmus_match_pitch_template(
