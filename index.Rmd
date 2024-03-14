@@ -350,6 +350,42 @@ AmadeusMozMoz |>
   labs(x = "Time (s)", y = "")
 ```
 
+
+#### Tempo Analysis (Week 11)
+Below I will once again compare the two pieces mentioned above, but this time analyzing they tempo's and percieved changes in these tempi.
+
+Hans Zimmer - Time
+
+Given that this is a more recent piece of music, we can see that it generally follows a more stable tempo around ~125 bpm, but we can also see that the analysis is having a hard time with all the drones and swells in this production.
+```{r}
+ZimmerTempo <- get_tidy_audio_analysis("6ZFbXIJkuI1dVNWvzJzown")
+
+ZimmerTempo |>
+  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+
+```
+
+Mozart - Nachtmusik
+
+The line in Mozart's piece seems to be a more well defined that that in Zimmer's, but we can also so it increasing and decreasing over time. This doesn't seem to happen section by section, but rather in a fluid motion. This could be explained that musical tempo in this time was more susceptible to "feeling". Often tempo was given in terms like adagio or presto, rather than a strict musical bpm. So the performance is likely speeding up and slowing down to give weight to certain parts of the song.
+```{r}
+MozartTempo <- get_tidy_audio_analysis("4KLVPRo0f6XUJa4t4dnRW6")
+
+MozartTempo |>
+  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+
+```
+
 ***
 Data sourced from SPOTIFY URI.
 
