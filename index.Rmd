@@ -26,9 +26,30 @@ In the graph below you can see an analysis of the energy levels when comparing t
 
 ```{r}
 library(tidyverse)
+library(tidymodels)
 library(spotifyr)
+library(ggdendro)
+library(heatmaply)
 library(compmus)
 
+get_conf_mat <- function(fit) {
+  outcome <- .get_tune_outcome_names(fit)
+  fit |> 
+    collect_predictions() |> 
+    conf_mat(truth = outcome, estimate = .pred_class)
+}  
+
+get_pr <- function(fit) {
+  fit |> 
+    conf_mat_resampled() |> 
+    group_by(Prediction) |> mutate(precision = Freq / sum(Freq)) |> 
+    group_by(Truth) |> mutate(recall = Freq / sum(Freq)) |> 
+    ungroup() |> filter(Prediction == Truth) |> 
+    select(class = Prediction, precision, recall)
+}  
+```
+
+```{r}
 ClassicalMusic <- get_playlist_audio_features("", "27Zm1P410dPfedsdoO9fqm")
 FilmMusic <- get_playlist_audio_features("", "3FUHkTsK7xNOqrHOXVHRF4")
 
@@ -383,6 +404,71 @@ MozartTempo |>
   scale_fill_viridis_c(guide = "none") +
   labs(x = "Time (s)", y = "Tempo (BPM)") +
   theme_classic()
+
+```
+
+
+#### Week 12 Clustering
+```{r}
+ClassicalMusic2 <-
+  get_playlist_audio_features("FilmMusic", "37i9dQZF1DX1tz6EDao8it") |>
+  add_audio_analysis() |>
+  mutate(
+    segments = map2(segments, key, compmus_c_transpose),
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      ),
+    timbre =
+      map(
+        segments,
+        compmus_summarise, timbre,
+        method = "mean"
+      )
+  ) |>
+  mutate(pitches = map(pitches, compmus_normalise, "clr")) |>
+  mutate_at(vars(pitches, timbre), map, bind_rows) |>
+  unnest(cols = c(pitches, timbre))
+
+ClassicalMusic2_juice <-
+  recipe(
+    track.name ~
+      danceability +
+      energy +
+      loudness +
+      speechiness +
+      acousticness +
+      instrumentalness +
+      liveness +
+      valence +
+      tempo +
+      duration +
+      C + `C#|Db` + D + `D#|Eb` +
+      E + `F` + `F#|Gb` + G +
+      `G#|Ab` + A + `A#|Bb` + B +
+      c01 + c02 + c03 + c04 + c05 + c06 +
+      c07 + c08 + c09 + c10 + c11 + c12,
+    data = ClassicalMusic2
+  ) |>
+  step_center(all_predictors()) |>
+  step_scale(all_predictors()) |> 
+  # step_range(all_predictors()) |> 
+  prep(ClassicalMusic2 |> mutate(track.name = str_trunc(track.name, 20))) |>
+  juice() |>
+  column_to_rownames("track.name")
+```
+
+Drawing a graph of Film Music Cluster Analysis
+
+Not entirely sure if this is usefull for the overall analysis, but ok.
+```{r}
+ClassicalMusic2_dist <- dist(ClassicalMusic2_juice, method = "euclidean")
+
+ClassicalMusic2_dist |> 
+  hclust(method = "single") |> # Try single, average, and complete.
+  dendro_data() |>
+  ggdendrogram()
 
 ```
 
