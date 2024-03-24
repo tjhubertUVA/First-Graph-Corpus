@@ -461,7 +461,7 @@ ClassicalMusic2_juice <-
 
 Drawing a graph of Film Music Cluster Analysis
 
-Not entirely sure if this is usefull for the overall analysis, but ok.
+Not entirely sure if this is useful for the overall analysis, but ok.
 ```{r}
 ClassicalMusic2_dist <- dist(ClassicalMusic2_juice, method = "euclidean")
 
