@@ -1,30 +1,43 @@
 ---
-title: "Portfolio by Thomas Hubert"
+title: "Computational Musicology Portfolio by Thomas Hubert"
 output: 
   flexdashboard::flex_dashboard:
     storyboard: true
-date: "2024-02-21"
+date: "Feb-Mar 2024"
 ---
 
 ### Introduction
+#### Introduction
+Dear Reader,
 
-Welcome to my Portfolio! This is where I will display my findings during the course 'Computational Musicology' at the UvA.Feel free to look around and ask me any questions :)
+In this portfolio I will be analyzing a Corpus of two playlists;
+'Iconic Soundtracks' by Spotify (37i9dQZF1DX1tz6EDao8it) (82 songs), and
+'Top Classical Music on Spotify' by Rogerio Tutti (2shU0q1gKzX4dwpYkLFrPw) (94 songs).
 
-In this Corpus I am comparing FIlm Music and Classical Music, and seeing how they interact and how they differ.
+My aim in comparing these two playlist is to uncovering possible similarities between Classical Music and Film Music.
+Seeing as a link can be drawn between Classical orchestral pieces that were for example played during an Opera, and
+Cinematic orchestral pieces being played during a film. Seeing as both aim to amplify and support the story that is
+being told to the audience. 
 
+This analysis will be done using various functions of Spotify's own API. My findings will be displayed in a number of
+graphs and accompanying texts. First I will display some playlist-level analyses, and then compare a few musical
+pieces against each other for a more in depth analysis. Finally I will present some of the conclusions that can be
+drawn from this project. 
+
+I hope you find these analyses and conclusions to be of some value in your own musicological research!
+
+Kind regards,
+Thomas Hubert
 
 -Info-
-Thomas Hubert
+Name: Thomas Hubert
 SNUM: 14642271
 Email: thomas.hubert@student.uva.nl
-
-### Visuals
-
-#### Similar Energy Levels Between Classical & Film Music
-
-In the graph below you can see an analysis of the energy levels when comparing two playlists of classical music and of film music. You can see that there indeed appears to be a very similar distribution of energy levels across both genres, you may also be able to see that they similarly have a lot of tracks considered "low" in energy and relatively little considered "high" in energy.
+Date: February & March 2024
+Course: Computational Musicology (115215146Y)
 
 ```{r}
+#Loading Libraries and Defining Functions.
 library(tidyverse)
 library(tidymodels)
 library(spotifyr)
@@ -49,6 +62,13 @@ get_pr <- function(fit) {
 }  
 ```
 
+### Playlist-Level Analysis
+#### Playlist-Level Analysis
+On this page I will conduct some analyses on a playlist level. Meaning that the following graphs portray patterns that can be found in one or both of the chosen playlists within the corpus. I will compare some of Spotify's own API markers such as; energy, valence, and loudness.
+
+#### Energy-Analysis
+In the graph below you can see an analysis of the energy levels when comparing two playlists of classical music and of film music. You can see that there indeed appears to be a very similar distribution of energy levels across both genres, you may also be able to see that they similarly have a lot of tracks considered "low" in energy and relatively little considered "high" in energy.
+
 ```{r}
 ClassicalMusic <- get_playlist_audio_features("", "27Zm1P410dPfedsdoO9fqm")
 FilmMusic <- get_playlist_audio_features("", "3FUHkTsK7xNOqrHOXVHRF4")
@@ -66,16 +86,91 @@ awards |>
 
 ```
 
-#### Comparing Hans Zimmer - Time & Wolfgang Amadeus Mozart - Eine kleine Nachtmusik K.525
-
-In the following two graphs I compare the very famous movie theme 'Time' by Hans Zimmer from the movie Inception, against the classical music piece Eine Kleine Nachtmusik (K.525) by Wolfgang Amadeus Mozart. Both of these pieces are in the key of G-major, but you can clearly see a difference in their song structure. Both pieces are around ~5 minutes in length, but whereas Zimmer tends to hold the listener in a state of harmonic suspense (Many of the notes are repeated over and over), Mozart displays are more classical from of song structure by clearly switching between chords (note the clear distinction of notes in the graph)
-
+#### Cluster-Analysis
 ```{r}
-library(tidyverse)
-library(spotifyr)
-library(compmus)
+ClassicalMusic2 <-
+  get_playlist_audio_features("FilmMusic", "37i9dQZF1DX1tz6EDao8it") |>
+  add_audio_analysis() |>
+  mutate(
+    segments = map2(segments, key, compmus_c_transpose),
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      ),
+    timbre =
+      map(
+        segments,
+        compmus_summarise, timbre,
+        method = "mean"
+      )
+  ) |>
+  mutate(pitches = map(pitches, compmus_normalise, "clr")) |>
+  mutate_at(vars(pitches, timbre), map, bind_rows) |>
+  unnest(cols = c(pitches, timbre))
 
-#Drawing A Graph For Hans Zimmer
+ClassicalMusic2_juice <-
+  recipe(
+    track.name ~
+      danceability +
+      energy +
+      loudness +
+      speechiness +
+      acousticness +
+      instrumentalness +
+      liveness +
+      valence +
+      tempo +
+      duration +
+      C + `C#|Db` + D + `D#|Eb` +
+      E + `F` + `F#|Gb` + G +
+      `G#|Ab` + A + `A#|Bb` + B +
+      c01 + c02 + c03 + c04 + c05 + c06 +
+      c07 + c08 + c09 + c10 + c11 + c12,
+    data = ClassicalMusic2
+  ) |>
+  step_center(all_predictors()) |>
+  step_scale(all_predictors()) |> 
+  # step_range(all_predictors()) |> 
+  prep(ClassicalMusic2 |> mutate(track.name = str_trunc(track.name, 20))) |>
+  juice() |>
+  column_to_rownames("track.name")
+```
+
+Drawing a graph of Film Music Cluster Analysis
+
+Not entirely sure if this is useful for the overall analysis, but ok.
+```{r}
+ClassicalMusic2_dist <- dist(ClassicalMusic2_juice, method = "euclidean")
+
+ClassicalMusic2_dist |> 
+  hclust(method = "single") |> # Try single, average, and complete.
+  dendro_data() |>
+  ggdendrogram()
+
+```
+
+### Comparing Hans Zimmer & Wolfgang Amadeus Mozart
+#### Comparing Hans Zimmer & Wolfgang Amadeus Mozart
+On this page I would like to compare the first of my pairs of songs from both playlists. Starting off we have two
+German speaking composers both being consider one of the Greats of their generation. Hans Zimmer is a multi-award
+winning Film Composer, and Wolfgang Amadeus Mozart barely needs an introduction.
+
+In this comparison I will compare Zimmer's 'Time' from the Movie 'Inception' to 
+Mozart's 'Eine kleine Nachtmusik (K.525)'. These two pieces of music were chosen because they are originally written
+in the same key of G-major, and are both forms of instrumental music
+
+#### Pitch Class-Analysis
+As I already mentioned, both of these pieces are in the key of G-major, but you can clearly see a difference in their
+song structure. Both pieces are around ~5 minutes in length, but whereas Zimmer tends to hold the listener in a state
+of harmonic suspense (Many of the notes are repeated over and over), Mozart displays are more classical from of song
+structure by clearly switching between chords (note the clear distinction of notes in the graph). 'Time' is also
+known for it's use of pedal-tones, which are notes that are held for a very long time during a piece of music. These
+can also be seen in the graph.
+
+Hans Zimmer - Time
+```{r}
+#Drawing A Graph of Hans Zimmer - Time
 zimmer <-
   get_tidy_audio_analysis("6ZFbXIJkuI1dVNWvzJzown") |>
   select(segments) |>
@@ -99,9 +194,9 @@ zimmer |>
   scale_fill_viridis_c()
 ```
 
+Wolfgang Amadeus Mozart - Eine kleine Nachtmusik (K.525)
 ```{r}
-
-#Drawing A Graph For Mozart
+#Drawing A Graph of Mozart -  Nachtmusik
 mozart <-
   get_tidy_audio_analysis("4KLVPRo0f6XUJa4t4dnRW6") |>
   select(segments) |>
@@ -126,9 +221,8 @@ mozart |>
 
 ```
 
-#### Comparing Song Sections
-
-Here we can see again how Hans Zimmer doesn't really have a clearly defined song structure, whereas Mozart does seem to do this. Eventhough they use the same musical key.
+#### Self Similarity-Analysis
+Here we can see again how Hans Zimmer doesn't really have a clearly defined song structure, whereas Mozart does seem to do this. Even though they use the same musical key.
 
 Hans Zimmer
 ```{r}
@@ -172,7 +266,6 @@ bztH |>
 
 ```
 
-
 Mozart
 ```{r}
 
@@ -215,12 +308,11 @@ bztM |>
 
 ```
 
-#### Chords analysis
-
+#### Chord-Analysis
 Now we will compare the chords used in these two songs.By doing this we can again correlate our findings from the previous two graphs. It appears that while Hans Zimmer's Time and Mozart's Nachtmusik share the same tonic chord (G-Major), and they both certainly make extensive use of thi chord, Zimmer doesn't follow common song structure nearly as much as Mozart does. This could be explained by the strong sense of "norm" back in Mozart's time, but it could also be an effect of more Chordal Thinking in Mozart's time.
 
 ```{r}
-
+#Preparing the Database
 circshift <- function(v, n) {
   if (n == 0) v else c(tail(v, n), head(v, -n))
 }
@@ -336,8 +428,9 @@ AmadeusMozMoz <-
 ```
 
 
-##### Hans Zimmer - Time
+Hans Zimmer - Time
 ```{r}
+#Drawing a Chordogram of Hans Zimmer - Time
 HansZimZim |> 
   compmus_match_pitch_template(
     chord_templates,         # Change to chord_templates if descired
@@ -354,8 +447,9 @@ HansZimZim |>
 ```
 
 
-##### Mozart - Nachtmusik
+Mozart - Nachtmusik
 ```{r}
+#Drawing a Chordogram of Mozart - Nachtmusik
 AmadeusMozMoz |> 
   compmus_match_pitch_template(
     chord_templates,         # Change to chord_templates if descired
@@ -372,7 +466,7 @@ AmadeusMozMoz |>
 ```
 
 
-#### Tempo Analysis (Week 11)
+#### Tempo-Analysis
 Below I will once again compare the two pieces mentioned above, but this time analyzing they tempo's and percieved changes in these tempi.
 
 Hans Zimmer - Time
@@ -407,74 +501,9 @@ MozartTempo |>
 
 ```
 
-
-#### Week 12 Clustering
-```{r}
-ClassicalMusic2 <-
-  get_playlist_audio_features("FilmMusic", "37i9dQZF1DX1tz6EDao8it") |>
-  add_audio_analysis() |>
-  mutate(
-    segments = map2(segments, key, compmus_c_transpose),
-    pitches =
-      map(segments,
-        compmus_summarise, pitches,
-        method = "mean", norm = "manhattan"
-      ),
-    timbre =
-      map(
-        segments,
-        compmus_summarise, timbre,
-        method = "mean"
-      )
-  ) |>
-  mutate(pitches = map(pitches, compmus_normalise, "clr")) |>
-  mutate_at(vars(pitches, timbre), map, bind_rows) |>
-  unnest(cols = c(pitches, timbre))
-
-ClassicalMusic2_juice <-
-  recipe(
-    track.name ~
-      danceability +
-      energy +
-      loudness +
-      speechiness +
-      acousticness +
-      instrumentalness +
-      liveness +
-      valence +
-      tempo +
-      duration +
-      C + `C#|Db` + D + `D#|Eb` +
-      E + `F` + `F#|Gb` + G +
-      `G#|Ab` + A + `A#|Bb` + B +
-      c01 + c02 + c03 + c04 + c05 + c06 +
-      c07 + c08 + c09 + c10 + c11 + c12,
-    data = ClassicalMusic2
-  ) |>
-  step_center(all_predictors()) |>
-  step_scale(all_predictors()) |> 
-  # step_range(all_predictors()) |> 
-  prep(ClassicalMusic2 |> mutate(track.name = str_trunc(track.name, 20))) |>
-  juice() |>
-  column_to_rownames("track.name")
-```
-
-Drawing a graph of Film Music Cluster Analysis
-
-Not entirely sure if this is useful for the overall analysis, but ok.
-```{r}
-ClassicalMusic2_dist <- dist(ClassicalMusic2_juice, method = "euclidean")
-
-ClassicalMusic2_dist |> 
-  hclust(method = "single") |> # Try single, average, and complete.
-  dendro_data() |>
-  ggdendrogram()
-
-```
-
 ***
-Data sourced from SPOTIFY URI.
+Data sourced from SPOTIFY API.
 
-### Conclusion
-
+### Conclusions
+#### Conclusions
 This page will list my conclusions. As I am currently still in the exploratory stage of this program, I do not have any definite conclusions yet.
