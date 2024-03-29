@@ -17,14 +17,14 @@ In this portfolio I will be analyzing a Corpus of two playlists;
 My aim in comparing these two playlist is to uncovering possible similarities between Classical Music and Film Music.
 Seeing as a link can be drawn between Classical orchestral pieces that were for example played during an Opera, and
 Cinematic orchestral pieces being played during a film. Seeing as both aim to amplify and support the story that is
-being told to the audience. 
+being told to the audience.
 
 This analysis will be done using various functions of Spotify's own API. My findings will be displayed in a number of
 graphs and accompanying texts. First I will display some playlist-level analyses, and then compare a few musical
 pieces against each other for a more in depth analysis. Finally I will present some of the conclusions that can be
-drawn from this project. 
+drawn from this project.
 
-I hope you find these analyses and conclusions to be of some value in your own musicological research!
+I hope you find these analyses and conclusions to be of some value in your own musicological research!\\
 
 Kind regards,
 Thomas Hubert
@@ -64,21 +64,44 @@ get_pr <- function(fit) {
 
 ### Playlist-Level Analysis
 #### Playlist-Level Analysis
-On this page I will conduct some analyses on a playlist level. Meaning that the following graphs portray patterns that can be found in one or both of the chosen playlists within the corpus. I will compare some of Spotify's own API markers such as; energy, valence, and loudness.
+On this page I will conduct some analyses on a playlist level. Meaning that the following graphs portray patterns that can \n 
+be found in one or both of the chosen playlists within the corpus. I will compare some of Spotify's own API markers such as; \n energy, valence, and loudness.\n
 
 #### Energy-Analysis
-In the graph below you can see an analysis of the energy levels when comparing two playlists of classical music and of film music. You can see that there indeed appears to be a very similar distribution of energy levels across both genres, you may also be able to see that they similarly have a lot of tracks considered "low" in energy and relatively little considered "high" in energy.
+In the graph below you can see an analysis of the energy levels when comparing two playlists of classical music and of film \n music. You can see that there indeed appears to be a very similar distribution of energy levels across both genres, you may \n 
+also be able to see that they similarly have a lot of tracks considered "low" in energy and relatively little considered "high" \n in energy.\n
 
 ```{r}
-ClassicalMusic <- get_playlist_audio_features("", "27Zm1P410dPfedsdoO9fqm")
-FilmMusic <- get_playlist_audio_features("", "3FUHkTsK7xNOqrHOXVHRF4")
+ClassicalMusic <- get_playlist_audio_features("", "2shU0q1gKzX4dwpYkLFrPw")
+FilmMusic <- get_playlist_audio_features("", "37i9dQZF1DX1tz6EDao8it")
 
 awards <-
   bind_rows(
     ClassicalMusic |> mutate(category = "Classical Music"),
     FilmMusic |> mutate(category = "Film Music")
   )
+```
 
+Valence
+```{r}
+awards |>
+  ggplot(aes(x = valence)) +
+  geom_histogram(binwidth = 0.1) +
+  facet_wrap(~category)
+
+```
+
+Loudness
+```{r}
+awards |>
+  ggplot(aes(x = loudness)) +
+  geom_histogram(binwidth = 0.1) +
+  facet_wrap(~category)
+
+```
+
+Energy
+```{r}
 awards |>
   ggplot(aes(x = energy)) +
   geom_histogram(binwidth = 0.1) +
@@ -87,88 +110,27 @@ awards |>
 ```
 
 #### Cluster-Analysis
-```{r}
-ClassicalMusic2 <-
-  get_playlist_audio_features("FilmMusic", "37i9dQZF1DX1tz6EDao8it") |>
-  add_audio_analysis() |>
-  mutate(
-    segments = map2(segments, key, compmus_c_transpose),
-    pitches =
-      map(segments,
-        compmus_summarise, pitches,
-        method = "mean", norm = "manhattan"
-      ),
-    timbre =
-      map(
-        segments,
-        compmus_summarise, timbre,
-        method = "mean"
-      )
-  ) |>
-  mutate(pitches = map(pitches, compmus_normalise, "clr")) |>
-  mutate_at(vars(pitches, timbre), map, bind_rows) |>
-  unnest(cols = c(pitches, timbre))
-
-ClassicalMusic2_juice <-
-  recipe(
-    track.name ~
-      danceability +
-      energy +
-      loudness +
-      speechiness +
-      acousticness +
-      instrumentalness +
-      liveness +
-      valence +
-      tempo +
-      duration +
-      C + `C#|Db` + D + `D#|Eb` +
-      E + `F` + `F#|Gb` + G +
-      `G#|Ab` + A + `A#|Bb` + B +
-      c01 + c02 + c03 + c04 + c05 + c06 +
-      c07 + c08 + c09 + c10 + c11 + c12,
-    data = ClassicalMusic2
-  ) |>
-  step_center(all_predictors()) |>
-  step_scale(all_predictors()) |> 
-  # step_range(all_predictors()) |> 
-  prep(ClassicalMusic2 |> mutate(track.name = str_trunc(track.name, 20))) |>
-  juice() |>
-  column_to_rownames("track.name")
-```
-
-Drawing a graph of Film Music Cluster Analysis
-
-Not entirely sure if this is useful for the overall analysis, but ok.
-```{r}
-ClassicalMusic2_dist <- dist(ClassicalMusic2_juice, method = "euclidean")
-
-ClassicalMusic2_dist |> 
-  hclust(method = "single") |> # Try single, average, and complete.
-  dendro_data() |>
-  ggdendrogram()
-
-```
 
 ### Comparing Hans Zimmer & Wolfgang Amadeus Mozart
 #### Comparing Hans Zimmer & Wolfgang Amadeus Mozart
-On this page I would like to compare the first of my pairs of songs from both playlists. Starting off we have two
-German speaking composers both being consider one of the Greats of their generation. Hans Zimmer is a multi-award
-winning Film Composer, and Wolfgang Amadeus Mozart barely needs an introduction.
+On this page I would like to compare the first of my pairs of songs from both playlists. Starting off we have two \n
+German speaking composers both being consider one of the Greats of their generation. Hans Zimmer is a multi-award \n
+winning Film Composer, and Wolfgang Amadeus Mozart barely needs an introduction. \n
 
-In this comparison I will compare Zimmer's 'Time' from the Movie 'Inception' to 
-Mozart's 'Eine kleine Nachtmusik (K.525)'. These two pieces of music were chosen because they are originally written
-in the same key of G-major, and are both forms of instrumental music
+In this comparison I will compare Zimmer's 'Time' from the Movie 'Inception' to \n
+Mozart's 'Eine kleine Nachtmusik (K.525)'. These two pieces of music were chosen \n
+because they are originally written in the same key of G-major, and are both forms \n
+of instrumental music.\n
 
 #### Pitch Class-Analysis
-As I already mentioned, both of these pieces are in the key of G-major, but you can clearly see a difference in their
-song structure. Both pieces are around ~5 minutes in length, but whereas Zimmer tends to hold the listener in a state
-of harmonic suspense (Many of the notes are repeated over and over), Mozart displays are more classical from of song
-structure by clearly switching between chords (note the clear distinction of notes in the graph). 'Time' is also
-known for it's use of pedal-tones, which are notes that are held for a very long time during a piece of music. These
-can also be seen in the graph.
+As I already mentioned, both of these pieces are in the key of G-major, but you can clearly see a difference in their \n
+song structure. Both pieces are around ~5 minutes in length, but whereas Zimmer tends to hold the listener in a state \n
+of harmonic suspense (Many of the notes are repeated over and over), Mozart displays are more classical from of song \n
+structure by clearly switching between chords (note the clear distinction of notes in the graph). 'Time' is also \n
+known for it's use of pedal-tones, which are notes that are held for a very long time during a piece of music. These \n
+can also be seen in the graph.\n
 
-Hans Zimmer - Time
+Hans Zimmer - Time \n
 ```{r}
 #Drawing A Graph of Hans Zimmer - Time
 zimmer <-
@@ -194,7 +156,7 @@ zimmer |>
   scale_fill_viridis_c()
 ```
 
-Wolfgang Amadeus Mozart - Eine kleine Nachtmusik (K.525)
+Wolfgang Amadeus Mozart - Eine kleine Nachtmusik (K.525) \n
 ```{r}
 #Drawing A Graph of Mozart -  Nachtmusik
 mozart <-
@@ -222,9 +184,13 @@ mozart |>
 ```
 
 #### Self Similarity-Analysis
-Here we can see again how Hans Zimmer doesn't really have a clearly defined song structure, whereas Mozart does seem to do this. Even though they use the same musical key.
+The following two graphs are Self Similarity Matrices, which compares a moment in the song to itself. \n
+With this we can see that Zimmer’s ‘Time’ doesn’t really have a clearly defined structure \n
+(we would expect a Checkerboard Pattern), but rather it builds and builds. Mozart’s ‘Nachtmusik’ does \n
+appear to follow a certain structure, given that we can see a Checkerboard Pattern. To be specific, \n
+the structure that Mozart follows in this song is called a Sonata-Rondo form. \n
 
-Hans Zimmer
+Hans Zimmer - Time \n
 ```{r}
 
 bztH <-
@@ -266,7 +232,7 @@ bztH |>
 
 ```
 
-Mozart
+Wolfgang Amadeus Mozart - Eine kleine Nachtmusik (K.525) \n
 ```{r}
 
 bztM <-
@@ -309,7 +275,16 @@ bztM |>
 ```
 
 #### Chord-Analysis
-Now we will compare the chords used in these two songs.By doing this we can again correlate our findings from the previous two graphs. It appears that while Hans Zimmer's Time and Mozart's Nachtmusik share the same tonic chord (G-Major), and they both certainly make extensive use of thi chord, Zimmer doesn't follow common song structure nearly as much as Mozart does. This could be explained by the strong sense of "norm" back in Mozart's time, but it could also be an effect of more Chordal Thinking in Mozart's time.
+Now we will compare the chords used in these two songs. By doing this we can again correlate our \n
+findings from the previous two graphs. It appears that while Hans Zimmer’s Time and Mozart’s Nachtmusik \n
+share the same tonic chord (G-Major), this doesn’t clearly show up on the graphs. This could be because \n
+both songs aren’t exactly tuned to A-440Hz. One observation that might support this is that the Major \n
+Chords one semi-tone above and below G (Ab & Gb) do appear to show up in the song. This could be the \n
+software trying to compensate for the detuning. We can also correlate our previous statement about song \n
+structure, namely that we can observe the previously mentioned Sonata-Rondo form in Mozart’s music, \n
+and we can see that Zimmer’s piece is essentially one long build up, with a climax near the end. \n
+One reason that Mozart might adhere so strictly to form is the strong sense of “norm” back in Mozart’s \n
+time, but it could also be an effect of more Chordal Thinking in Mozart’s time.\n
 
 ```{r}
 #Preparing the Database
@@ -428,7 +403,7 @@ AmadeusMozMoz <-
 ```
 
 
-Hans Zimmer - Time
+Hans Zimmer - Time \n
 ```{r}
 #Drawing a Chordogram of Hans Zimmer - Time
 HansZimZim |> 
@@ -447,7 +422,7 @@ HansZimZim |>
 ```
 
 
-Mozart - Nachtmusik
+Wolfgang Amadeus Mozart - Eine kleine Nachtmusik (K.525) \n
 ```{r}
 #Drawing a Chordogram of Mozart - Nachtmusik
 AmadeusMozMoz |> 
@@ -465,13 +440,19 @@ AmadeusMozMoz |>
   labs(x = "Time (s)", y = "")
 ```
 
-
 #### Tempo-Analysis
-Below I will once again compare the two pieces mentioned above, but this time analyzing they tempo's and percieved changes in these tempi.
+Below I will once again compare the two pieces mentioned above, but this time analyzing their \n
+tempo’s and perceived changes in these tempi. Given that Hans Zimmer’s ‘Time’ is a more recent \n
+piece of music, we can see that it generally follows a more stable tempo around ~125 BPM, but \n
+we can also see that the analysis is having a hard time with all the drones and swells in this \n
+production. Compare that to the line in Mozart’s piece, which seems to be more well defined that \n
+that in Zimmer’s, but we can also so it increasing and decreasing over time. This doesn’t seem \n
+to happen section by section, but rather in a fluid motion. This could be explained that musical \n
+tempo in this time was more susceptible to “feeling”. Often tempo was given in terms like adagio \n
+or presto, rather than a strict musical BPM. So the performance is likely speeding up and slowing \n
+down to give weight to certain parts of the song.\n
 
-Hans Zimmer - Time
-
-Given that this is a more recent piece of music, we can see that it generally follows a more stable tempo around ~125 bpm, but we can also see that the analysis is having a hard time with all the drones and swells in this production.
+Hans Zimmer - Time \n
 ```{r}
 ZimmerTempo <- get_tidy_audio_analysis("6ZFbXIJkuI1dVNWvzJzown")
 
@@ -485,9 +466,7 @@ ZimmerTempo |>
 
 ```
 
-Mozart - Nachtmusik
-
-The line in Mozart's piece seems to be a more well defined that that in Zimmer's, but we can also so it increasing and decreasing over time. This doesn't seem to happen section by section, but rather in a fluid motion. This could be explained that musical tempo in this time was more susceptible to "feeling". Often tempo was given in terms like adagio or presto, rather than a strict musical bpm. So the performance is likely speeding up and slowing down to give weight to certain parts of the song.
+Wolfgang Amadeus Mozart - Eine kleine Nachtmusik (K.525) \n
 ```{r}
 MozartTempo <- get_tidy_audio_analysis("4KLVPRo0f6XUJa4t4dnRW6")
 
