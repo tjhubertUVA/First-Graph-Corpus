@@ -20,11 +20,10 @@ Cinematic orchestral pieces being played during a film. Seeing as both aim to am
 being told to the audience.
 
 This analysis will be done using various functions of Spotify's own API. My findings will be displayed in a number of
-graphs and accompanying texts. First I will display some playlist-level analyses, and then compare a few musical
-pieces against each other for a more in depth analysis. Finally I will present some of the conclusions that can be
+graphs and accompanying texts. First I will display some playlist-level analyses, and then compare two musical pieces against each other for a more in depth analysis. Finally I will present some of the conclusions that can be
 drawn from this project.
 
-I hope you find these analyses and conclusions to be of some value in your own musicological research!\\
+I hope you find these analyses and conclusions to be of some value in your own musicological research!
 
 Kind regards,
 Thomas Hubert
@@ -67,9 +66,8 @@ get_pr <- function(fit) {
 On this page I will conduct some analyses on a playlist level. Meaning that the following graphs portray patterns that can \n 
 be found in one or both of the chosen playlists within the corpus. I will compare some of Spotify's own API markers such as; \n energy, valence, and loudness.\n
 
-#### Energy-Analysis
-In the graph below you can see an analysis of the energy levels when comparing two playlists of classical music and of film \n music. You can see that there indeed appears to be a very similar distribution of energy levels across both genres, you may \n 
-also be able to see that they similarly have a lot of tracks considered "low" in energy and relatively little considered "high" \n in energy.\n
+#### Characteristic-Analysis
+In the graphs below you can see an analysis of the energy, valence and loudness levels when comparing two playlists of classical music and of film music. You can see that there indeed appears to be a very similar distribution of energy levels across both genres, you may also be able to see that they similarly have a lot of tracks considered "low" in energy and relatively little considered "high" in energy. Interesting to note that there are a lot more songs in the Classical Playlist that are considered to be near "0" in energy. It is also interesting to note that these correlations also seem to extend into the valence graph. With almost all graphs considered to be <0,5 value. Loudness also seems to corroborate, but of note is the one massive outlier of "6" in the Classical Playlist. Although this could just be a case of the software over-reading a value in a song.
 
 ```{r}
 ClassicalMusic <- get_playlist_audio_features("", "2shU0q1gKzX4dwpYkLFrPw")
@@ -108,8 +106,6 @@ awards |>
   facet_wrap(~category)
 
 ```
-
-#### Cluster-Analysis
 
 ### Comparing Hans Zimmer & Wolfgang Amadeus Mozart
 #### Comparing Hans Zimmer & Wolfgang Amadeus Mozart
