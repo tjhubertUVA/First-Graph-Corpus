@@ -67,7 +67,7 @@ On this page I will conduct some analyses on a playlist level. Meaning that the 
 be found in one or both of the chosen playlists within the corpus. I will compare some of Spotify's own API markers such as; \n energy, valence, and loudness.\n
 
 #### Characteristic-Analysis
-In the graphs below you can see an analysis of the energy, valence and loudness levels when comparing two playlists of classical music and of film music. You can see that there indeed appears to be a very similar distribution of energy levels across both genres, you may also be able to see that they similarly have a lot of tracks considered "low" in energy and relatively little considered "high" in energy. Interesting to note that there are a lot more songs in the Classical Playlist that are considered to be near "0" in energy. It is also interesting to note that these correlations also seem to extend into the valence graph. With almost all graphs considered to be <0,5 value. Loudness also seems to corroborate, but of note is the one massive outlier of "6" in the Classical Playlist. Although this could just be a case of the software over-reading a value in a song.
+In the graphs below you can see an analysis of the energy, valence and loudness levels when comparing two playlists of classical music and of film music. You can see that there indeed appears to be a very similar distribution of energy levels across both genres, you may also be able to see that they similarly have a lot of tracks considered "low" in energy and relatively little considered "high" in energy. Interesting to note is that there are a lot more songs in the Classical Playlist that are considered to be near "0" in energy. It is also interesting to note that these correlations also seem to extend into the valence graph. With almost all graphs considered to be <0,5 value. Loudness also seems to corroborate, but of note is the one massive outlier of "6" in the Classical Playlist. Although this could just be a case of the software over-reading a value in a song.
 
 ```{r}
 ClassicalMusic <- get_playlist_audio_features("", "2shU0q1gKzX4dwpYkLFrPw")
@@ -109,8 +109,8 @@ awards |>
 
 ### Comparing Hans Zimmer & Wolfgang Amadeus Mozart
 #### Comparing Hans Zimmer & Wolfgang Amadeus Mozart
-On this page I would like to compare the first of my pairs of songs from both playlists. Starting off we have two \n
-German speaking composers both being consider one of the Greats of their generation. Hans Zimmer is a multi-award \n
+On this page I would like to compare a pair of songs from both playlists. Here we have two \n
+German speaking composers which are both being consider one of the Greats of their generation. Hans Zimmer is a multi-award \n
 winning Film Composer, and Wolfgang Amadeus Mozart barely needs an introduction. \n
 
 In this comparison I will compare Zimmer's 'Time' from the Movie 'Inception' to \n
@@ -121,7 +121,7 @@ of instrumental music.\n
 #### Pitch Class-Analysis
 As I already mentioned, both of these pieces are in the key of G-major, but you can clearly see a difference in their \n
 song structure. Both pieces are around ~5 minutes in length, but whereas Zimmer tends to hold the listener in a state \n
-of harmonic suspense (Many of the notes are repeated over and over), Mozart displays are more classical from of song \n
+of harmonic suspense (Many of the notes are repeated over and over), Mozart displays are more classical form of song \n
 structure by clearly switching between chords (note the clear distinction of notes in the graph). 'Time' is also \n
 known for it's use of pedal-tones, which are notes that are held for a very long time during a piece of music. These \n
 can also be seen in the graph.\n
@@ -442,8 +442,8 @@ tempo’s and perceived changes in these tempi. Given that Hans Zimmer’s ‘Ti
 piece of music, we can see that it generally follows a more stable tempo around ~125 BPM, but \n
 we can also see that the analysis is having a hard time with all the drones and swells in this \n
 production. Compare that to the line in Mozart’s piece, which seems to be more well defined that \n
-that in Zimmer’s, but we can also so it increasing and decreasing over time. This doesn’t seem \n
-to happen section by section, but rather in a fluid motion. This could be explained that musical \n
+that in Zimmer’s, but we can also see it increasing and decreasing over time. This doesn’t seem \n
+to happen section by section, but rather in a fluid motion. This could be explained by the fact that musical \n
 tempo in this time was more susceptible to “feeling”. Often tempo was given in terms like adagio \n
 or presto, rather than a strict musical BPM. So the performance is likely speeding up and slowing \n
 down to give weight to certain parts of the song.\n
@@ -481,4 +481,13 @@ Data sourced from SPOTIFY API.
 
 ### Conclusions
 #### Conclusions
-This page will list my conclusions. As I am currently still in the exploratory stage of this program, I do not have any definite conclusions yet.
+Now that we have looked at some Playlist-Level analyses, and extensively compared two famous tracks we can conclude a couple of things.
+
+Firstly, that Classical- and Film Music indeed share a very similar space withing the different Spotify API features, correlating closely in factors such as Energy, Valence and Loudness. This could be explained by both genres of music often being used to amplify a visual story. Such as Opera and Film.
+
+Secondly, from the in depth analysis of 'Time' and 'Eine Kleine Nachtmusik' we can conclude that although they share a lot of similarities on a Playlist-Level, they can be very different on a Track-Level. Even when sharing the same tonic note and key, the underlying structure and harmony can be very different. And the use of Tempo has also changed over the centuries.  
+
+Although these findings are interesting, this is only a brief inquiry into the vast world of Classical and Film music, and more research is definitely needed. However, I hope that with this Portfolio I have show the value of comparing these two genres and have given an indication of where future researchers can go and build upon these findings.
+
+Thank you for reading my Portfolio!
+- Thomas Hubert
